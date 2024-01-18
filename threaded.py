@@ -154,18 +154,19 @@ class Recipes:
 
             # Nutritional Info
             nutritionalInfo = recipe.get("nutritionalInfo", [])
-            nutritionalInfoF = None
-
+            nutritionalInfoF = []
+            
             for nutrition in nutritionalInfo:
                 label = nutrition.get("label")
                 value = nutrition.get("value")
                 prefix, suffix = nutrition.get("prefix"), nutrition.get("suffix")
-                nutritionalInfoF = {
+                nutritionalInfo = {
                     "label": label,
                     "value": value,
                     "prefix": prefix,
                     "suffix": suffix,
                 }
+                nutritionalInfoF.append(nutritionalInfo)
             # Skill level and time
             skillLevel = recipe.get("skillLevel")
             cookPrepTime = recipe.get("cookAndPrepTime", {})
@@ -179,25 +180,29 @@ class Recipes:
 
             # Method
             methodSteps = recipe.get("methodSteps", [])
-            servings = recipe.get("servings")
+            servings = recipe.get("servings", None)
             # remove any alpha characters from servings
             numServings = ""
             numFound = False
             try:
-                for i in range(len(servings) - 1, 0, -1):
-                    if servings[i].isdigit():
-                        numFound = True
-                        numServings = servings[i] + numServings
-                    elif numFound:
-                        break
+                if servings:
+                    for i in range(len(servings) - 1, 0, -1):
+                        if servings[i].isdigit():
+                            numFound = True
+                            numServings = servings[i] + numServings
+                        elif numFound:
+                            break
+                else:
+                    numServings = None
             except Exception as e:
                 numServings = None
-                self.errors.append((url, e))
+                self.errors.append((url, e, servings))
             try:
-                numServings = int(numServings)
+                if numServings:
+                    numServings = int(numServings)
             except ValueError:
                 numServings = None
-                print("Error converting servings to int")
+                self.errors.append(url, "Error converting servings to int")
 
             methodF = []
             stepNum = 0
