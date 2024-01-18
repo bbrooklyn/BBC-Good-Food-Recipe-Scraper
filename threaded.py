@@ -7,7 +7,6 @@ import os
 
 
 class Worker(Thread):
-    """Thread executing tasks from a given tasks queue"""
 
     def __init__(self, tasks):
         Thread.__init__(self)
@@ -21,15 +20,12 @@ class Worker(Thread):
             try:
                 func(*args, **kargs)
             except Exception as e:
-                # An exception happened in this thread
                 print(e)
             finally:
-                # Mark this task as done, whether an exception happened or not
                 self.tasks.task_done()
 
 
 class ThreadPool:
-    """Pool of threads consuming tasks from a queue"""
 
     def __init__(self, num_threads):
         self.tasks = Queue(num_threads)
