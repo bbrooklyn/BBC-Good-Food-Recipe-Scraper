@@ -138,7 +138,8 @@ class Recipes:
             data = soup.find("script", id="__NEXT_DATA__")
             data = json.loads(data.text)
             recipe = data["props"]["pageProps"]
-
+            description = recipe.get("description", "No description")
+            description = BeautifulSoup(description, "html.parser").get_text()
             rawIngredients = recipe["ingredients"][0]["ingredients"]
             allIngredients = []
             # Ingredients
@@ -177,7 +178,11 @@ class Recipes:
                 "url",
                 "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1665px-No-Image-Placeholder.svg.png",
             )
-
+            schema = recipe.get("schema", {})
+            recipeCategory = schema.get("recipeCategory", "")
+            recipeCategoryF = [c.strip() for c in recipeCategory.split(",")]
+            recipeCuisineF = schema.get("recipeCuisine", None)
+            
             # Method
             methodSteps = recipe.get("methodSteps", [])
             servings = recipe.get("servings", None)
@@ -221,7 +226,10 @@ class Recipes:
                                 {"step": stepNum, "instruction": instructionF}
                             )
             recipeData = {
-                "name": recipe["title"],
+                "name": recipe.get("name", "No name"),
+                "description": description,
+                "recipeCategory": recipeCategoryF,
+                "recipeCuisine": recipeCuisineF,
                 "nutrition": nutritionalInfoF,
                 "skillLevel": skillLevel,
                 "servings": servings,
@@ -232,8 +240,8 @@ class Recipes:
                     "cookTime": cookTime,
                     "totalTime": totalTime,
                 },
-                "methodSteps": methodF,
                 "ingredients": allIngredients,
+                "methodSteps": methodF
             }
             self.write.add_to_queue(recipeData)
 
