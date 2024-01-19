@@ -226,7 +226,7 @@ class Recipes:
                                 {"step": stepNum, "instruction": instructionF}
                             )
             recipeData = {
-                "name": recipe.get("name", "No name"),
+                "name": recipe.get("title", "No name"),
                 "description": description,
                 "recipeCategory": recipeCategoryF,
                 "recipeCuisine": recipeCuisineF,
