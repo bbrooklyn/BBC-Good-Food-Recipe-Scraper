@@ -250,5 +250,5 @@ class Recipes:
             return
 
 
-a = Recipes(sample_size=10)
+a = Recipes(sample_size=1000)
 a.fetch_recipes()
